@@ -25,6 +25,27 @@
             </tr>
             </tbody>
         </table>
+
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li :class="{ disabled: !pagination.prev_page_url }"
+                    @click.prevent="getTasks(pagination.prev_page_url)"
+                    class="page-item">
+                    <a class="page-link" href="#">Previous</a>
+                </li>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">
+                        Page {{ pagination.current_page }} of {{ pagination.last_page }}
+                    </a>
+                </li>
+                <li :class="{ disabled: !pagination.next_page_url }"
+                    @click.prevent="getTasks(pagination.next_page_url)"
+                    class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+
     </div>
 </template>
 
@@ -49,17 +70,30 @@ export default {
         this.getTasks()
     },
     methods: {
-        getTasks() {
+        getTasks(page_url) {
+            page_url = page_url || '/api/tasks'
+
             axios
-                .get('/api/tasks')
+                .get(page_url)
                 .then(response => {
                     this.tasks = response.data.data
+                    this.makePagination(response.data)
                 })
                 .catch(error => {
                     console.log(error)
                     this.errored = true
                 })
                 .finally(() => this.loading = false)
+        },
+        makePagination(response){
+            let pagination = {
+                current_page: response.current_page,
+                last_page: response.last_page,
+                prev_page_url: response.prev_page_url,
+                next_page_url: response.next_page_url
+            }
+            this.pagination = pagination
+            console.log(this.pagination)
         }
     }
 }
