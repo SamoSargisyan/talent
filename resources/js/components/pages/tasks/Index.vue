@@ -19,8 +19,12 @@
                 <td>{{ task.title }}</td>
                 <td>{{ task.description }}</td>
                 <td>
-                    <button class="btn btn-success">Update</button>
-                    <button class="btn btn-danger">Delete</button>
+                    <button class="btn btn-success">
+                        <i class="fa fa-pencil"></i>
+                    </button>
+                    <button @click="deleteTask(task.id)" class="btn btn-danger">
+                        <i class="fa fa-trash"></i>
+                    </button>
                 </td>
             </tr>
             </tbody>
@@ -59,7 +63,7 @@ export default {
                 title: '',
                 description: ''
             },
-            post_id: '',
+            task_id: '',
             pagination: {},
             edit: false,
             loading: true,
@@ -94,6 +98,12 @@ export default {
             }
             this.pagination = pagination
             console.log(this.pagination)
+        },
+        deleteTask(id){
+            axios
+                .delete(`/api/tasks/${id}`)
+                .then(response => console.log(response))
+                .catch(error => console.log(error))
         }
     }
 }
