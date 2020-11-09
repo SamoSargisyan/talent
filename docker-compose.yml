@@ -1,34 +1,36 @@
 version: '3.7'
 
 services:
-  php-fpm:
-    build:
-      context: docker/php-fpm
-    volumes:
-      - ./:/var/www
-      - ./docker/php-fpm/php.ini:/usr/local/etc/php/php.ini
-    environment:
-      XDEBUG_CONFIG: "remote_host=host.docker.internal remote_enable=1 max_nesting_level=512 remote_autostart=0 profiler_enable_trigger=off  remote_port=9010"
-      PHP_IDE_CONFIG: "serverName=Docker"
-    networks:
-      test-network:
-        ipv4_address: 192.168.220.4
-
-  nginx:
-    build:
-      context: docker/nginx
-    volumes:
-      - ./:/var/www
+  webapp:
+    image: nginx:alpine
+    container_name: nginx
     ports:
-      - "80:80"
+      - "8080:80"
+      - 443:443
+    volumes:
+      - ./docker/nginx/templates:/etc/nginx/templates
+      - .:/var/www/app:cached
+    environment:
+      NGINX_ENVSUBST_TEMPLATE_DIR: /etc/nginx/templates
+      NGINX_ENVSUBST_TEMPLATE_SUFFIX: .nginx
+      NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx/conf.d
     depends_on:
-      - php-fpm
-    networks:
-      test-network:
-        ipv4_address: 192.168.220.5
+      - app
+      - database
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - .:/var/www/app:cached
+    container_name: php
+    ports:
+      - "9000:9000"
 
   database:
-    image: postgres:11-alpine
+    image: library/postgres:12-alpine
+    container_name: postgres
     ports:
       - 5432:5432
     volumes:
@@ -38,29 +40,16 @@ services:
       POSTGRES_USER: webmaster
       POSTGRES_DB: talent
       PGDATA: /var/lib/postgresql/data/pgdata
-    networks:
-      test-network:
-        ipv4_address: 192.168.220.7
 
   adminer:
-    image: adminer
+    image: adminer:latest
+    container_name: adminer
     restart: always
     ports:
       - 8082:8080
     links:
       - database
-    networks:
-      test-network:
-        ipv4_address: 192.168.220.8
 
 volumes:
   database:
     driver: 'local'
-
-networks:
-  test-network:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.168.220.0/28
