@@ -1,6 +1,25 @@
 <template>
     <div>
         <h1>Todo list</h1>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <form @submit.prevent="addTask" class="mb-4">
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input v-model="task.title" type="text" class="form-control" id="title">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea v-model="task.description" class="form-control" id="description" rows="3"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Add Task</button>
+                </form>
+            </div>
+        </div>
+
         <div v-if="errored" class="alert alert-danger" role="alert">
             Oops.. something is wrong!
         </div>
@@ -104,6 +123,23 @@ export default {
                 .delete(`/api/tasks/${id}`)
                 .then(response => console.log(response))
                 .catch(error => console.log(error))
+        },
+        addTask(){
+            if (this.edit === false){
+                axios
+                    .post('/api/tasks', {
+                        title: this.task.title,
+                        description: this.task.description
+                    })
+                    .then(response => {
+                        this.title = ''
+                        this.description = ''
+                        this.getTasks()
+                        console.log(response)
+                    })
+                    .catch(error => console.log(error))
+            } else {
+            }
         }
     }
 }

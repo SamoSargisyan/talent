@@ -26,7 +26,12 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $task = new Task([
+            'title' => $request->get('title'),
+            'description' => $request->get('description')
+        ]);
+
+        $task->save();
     }
 
     /**
