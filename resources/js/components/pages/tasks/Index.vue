@@ -38,7 +38,7 @@
                 <td>{{ task.title }}</td>
                 <td>{{ task.description }}</td>
                 <td>
-                    <button class="btn btn-success">
+                    <button @click="editTask(task)" class="btn btn-success">
                         <i class="fa fa-pencil"></i>
                     </button>
                     <button @click="deleteTask(task.id)" class="btn btn-danger">
@@ -82,7 +82,6 @@ export default {
                 title: '',
                 description: ''
             },
-            task_id: '',
             pagination: {},
             edit: false,
             loading: true,
@@ -139,7 +138,25 @@ export default {
                     })
                     .catch(error => console.log(error))
             } else {
+                axios
+                    .put(`/api/tasks/${this.task.id}`, {
+                        title: this.task.title,
+                        description: this.task.description
+                    })
+                    .then(response => {
+                        this.title = ''
+                        this.description = ''
+                        this.getTasks()
+                        console.log(response)
+                    })
+                    .catch(error => console.log(error))
             }
+        },
+        editTask(task){
+            this.edit = true
+            this.task.id = task.id
+            this.task.title = task.title
+            this.task.description = task.description
         }
     }
 }
