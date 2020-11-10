@@ -26,6 +26,11 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'required|max:255',
+        ]);
+
         $task = new Task([
             'title' => $request->get('title'),
             'description' => $request->get('description')
@@ -54,6 +59,10 @@ class TaskController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'required|max:255',
+        ]);
         $task = Task::find($id);
         $task->title = $request->get('title');
         $task->description = $request->get('description');

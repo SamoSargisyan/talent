@@ -159,7 +159,12 @@ export default {
                         this.getTasks()
                         console.log(response)
                     })
-                    .catch(error => console.log(error))
+                    .catch(error => {
+                        if (error.response.status === 422){
+                            this.validationErrors = error.response.data.errors
+                        }
+                        console.log(error)
+                    })
             }
         },
         editTask(task){
