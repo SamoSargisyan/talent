@@ -16,9 +16,11 @@ window.Vue = require('vue');
 import App from './components/Welcome'
 import Navbar from './components/parts/Navbar'
 import Tasks from './components/pages/tasks/Index'
+import ValidationErrors from "./components/parts/ValidationErrors"
 
 Vue.component('navbar', Navbar);
 Vue.component('tasks', Tasks);
+Vue.component('validation-errors', ValidationErrors);
 
 
 const app = new Vue({
